@@ -107,3 +107,34 @@ class Sorting_algs():
             r += 1
         
         return merged
+
+    @staticmethod
+    def merge_sort_2(lst, sort = None):
+        """
+        @param list[int] lst: unordered list
+        @return list[int]: ordered list
+        Recursively splits the job in half in order to divide
+            and conquer, with performance optimization
+        """
+        # base case: only 1 element
+        if len(lst) == 1:
+            return lst
+
+        # divide in half
+        i = len(lst) // 2
+        left = Sorting_algs.merge_sort_2(lst[:i])
+        right = Sorting_algs.merge_sort_2(lst[i:])
+
+        # merge
+        merged = []
+        l, r = 0, 0
+        try:
+            while True:
+                if left[l] < right[r]:
+                    merged.append(left[l])
+                    l += 1
+                else:
+                    merged.append(right[r])
+                    r += 1
+        except:
+            return merged + left[l:] + right[r:]

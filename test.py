@@ -36,6 +36,9 @@ class Test():
     def merge_test(self):
         self.test_sorter(self.sorter.merge_sort)
 
+    def merge_test_2(self):
+        self.test_sorter(self.sorter.merge_sort_2)
+
     def test_sorted_search(self, search_alg):
         print(self.print_nicely(str(search_alg)), 'performance:')
         num_incorrect = 0
@@ -70,4 +73,5 @@ t.bubble_test()
 t.insertion_test()
 t.selection_test()
 t.merge_test()
+t.merge_test_2()
 t.print_incorrect()
