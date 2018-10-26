@@ -3,12 +3,19 @@ from random import randint
 from sorting_algs import Sorting_algs
 
 class Test():
-    NUM_ITER = 10
-    LIST_LENGTH = 5000
-    MAX_VAL = 100
+    NUM_ITER = 1000
+    LIST_LENGTH = 500
+    MAX_VAL = 10000
 
     def __init__(self):
         self.sorter = Sorting_algs()
+        self.incorrect = 0
+
+    def print_incorrect(self):
+        if self.incorrect == 0:
+            print ('All tests passed without errors.')
+        else:
+            print (self.incorrect, 'tests passed with errors.')
 
     @staticmethod
     def print_nicely(alg_def):
@@ -37,9 +44,12 @@ class Test():
             temp = sorted(list(set([randint(0, self.MAX_VAL) for _ in range(self.LIST_LENGTH)])))
             index = randint(0, len(temp) - 1)
             if search_alg(temp, temp[index]) != index:
+                print(search_alg(temp, temp[index]))
                 num_incorrect += 1
         print ('\t Time elapsed: ', time.time() - start)
         print('\tPercent correct:', 100 * (self.NUM_ITER - num_incorrect) / self.NUM_ITER)
+        if num_incorrect != 0:
+            self.incorrect += 1
 
     def test_sorter(self, sort_alg):
         print(self.print_nicely(str(sort_alg)), 'performance:')
@@ -51,6 +61,8 @@ class Test():
                 num_incorrect += 1
         print ('\t Time elapsed: ', time.time() - start)
         print('\tPercent correct:', 100 * (self.NUM_ITER - num_incorrect) / self.NUM_ITER)
+        if num_incorrect != 0:
+            self.incorrect += 1
 
 t = Test()
 t.binary_test()
@@ -58,4 +70,4 @@ t.bubble_test()
 t.insertion_test()
 t.selection_test()
 t.merge_test()
-print('Tests complete.')
+t.print_incorrect()
