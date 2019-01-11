@@ -1,13 +1,12 @@
+import random
+
 class Sorting_algs():
     @staticmethod
-    def binary_search(lst, targ, sort = None):
+    def binary_search_recursive(lst, targ, sort = None):
         """
-        @param list[int] lst: ordered list
-        @param int targ: element to find
-        @param sort: optional ordering comparison
-        @return int: index of target
-        Finds index of target element by recursively halving the list
+        Finds index of target element by *recursively* halving the list
         """
+
         def helper(lh, rh):
             if rh >= lh:
                 pivot = lh + (rh - lh) // 2
@@ -20,14 +19,44 @@ class Sorting_algs():
             else:
                 return -1
         return helper(0, len(lst) - 1)
+    
+    @staticmethod
+    def binary_search_iterative(lst, targ, sort = None):
+        """
+        Finds index of target element by *iteratively* halving the list
+        """
+
+        lh, rh = 0, len(lst) - 1
+        while lh <= rh:
+            piv = lh + (rh - lh) // 2
+            if lst[piv] == targ:
+                return piv
+            elif lst[piv] < targ:
+                lh = piv + 1
+            else:
+                rh = piv - 1
+        return -1
+    
+    @staticmethod
+    def binary_search_adding(lst, targ, sort = None):
+        """
+        Finds index of target element by repeatedly adding intervals of
+        decreasing size
+        """
+        n = len(lst)
+        curr_index = 0
+        step = n // 2
+        while step >= 1:
+            while curr_index + step < n and lst[curr_index + step] <= targ:
+                curr_index += step
+            step //= 2
+        return curr_index if lst[curr_index] == targ else -1
 
     @staticmethod
     def bubble_sort(lst, sort = None):
         """
-        @param list[int] lst: unordered list
-        @return list[int]: ordered list according to sort
-        Repeatedly iterates through the list, swapping adjacent elements
-            according to sort
+        Sorts a list by repeatedly iterates through the list, swapping 
+        adjacent elements according to sort
         """
         while True:
             numChanges = 0
@@ -39,12 +68,10 @@ class Sorting_algs():
                 return lst
 
     @staticmethod
-    def insertion_sort(lst, sort = None):
+    def insertion_sort_swapping(lst, sort = None):
         """
-        @param list[int] lst: unordered list
-        @return list[int]: ordered list according to sort
-        Sorts list by moving through list and inserting elements
-            and creating an ordered sublist
+        Sorts list by moving through list and swapping elements
+        until the sublist is again ordered.
         """
         for i in range(len(lst)):
             index = i
@@ -55,14 +82,28 @@ class Sorting_algs():
                 else:
                     break
         return lst
+    
+    @staticmethod
+    def insertion_sort_moving(lst, sort = None):
+        """
+        Sorts list by moving through list and moving elements over
+        until the sublist is again ordered.
+        """
+        for i in range(len(lst)):
+            key = lst[i]
+            j = i - 1
+            # move over elements one at a time, circumventing swapping
+            while j >= 0 and lst[j] > key:
+                lst[j + 1] = lst[j]
+                j -= 1
+            lst[j + 1] = key
+        return lst
 
     @staticmethod
     def selection_sort(lst, sort = None):
         """
-        @param list[int] lst: unordered list
-        @return list[int]: ordered list according to sort
-        Sorts the list by iterating through the list and 
-            swapping to create an ordered sublist
+        Sorts the list by iterating through the list and swapping
+        the current element with the minimum remaining element
         """
         for i in range(len(lst)):
             min_index = i
@@ -75,10 +116,8 @@ class Sorting_algs():
     @staticmethod
     def merge_sort(lst, sort = None):
         """
-        @param list[int] lst: unordered list
-        @return list[int]: ordered list
         Recursively splits the job in half in order to divide
-            and conquer
+        and conquer
         """
         # base case: only 1 element
         if len(lst) == 1:
@@ -91,7 +130,7 @@ class Sorting_algs():
 
         # merge
         merged = []
-        l, r = 0, 0
+        l = r = 0
         while l < len(left) and r < len(right):
             if left[l] < right[r]:
                 merged.append(left[l])
@@ -127,7 +166,7 @@ class Sorting_algs():
 
         # merge
         merged = []
-        l, r = 0, 0
+        l = r = 0
         try:
             while True:
                 if left[l] < right[r]:
@@ -138,3 +177,73 @@ class Sorting_algs():
                     r += 1
         except:
             return merged + left[l:] + right[r:]
+    
+    @staticmethod
+    def quicksort(lst, sort = None):
+        """
+        Recursively partitions the list using a divide and conquer
+        approach
+        """
+        def partition(lh, rh, pivot):
+            while lh <= rh:
+                # skip unswapped elements
+                while lst[lh] < pivot:
+                    lh += 1
+                while lst[rh] > pivot:
+                    rh -= 1
+                # swap
+                if lh <= rh:
+                    lst[lh], lst[rh] = lst[rh], lst[lh]
+                    lh += 1
+                    rh -= 1
+            return lh
+
+        # main driver function
+        def helper(start, end):
+            # base case
+            if start >= end: return
+            # randomly choose middle element
+            pivot = random.choice(lst[start:end + 1])
+            half = partition(start, end, pivot)
+            helper(start, half - 1)
+            helper(half, end)
+        
+        helper(0, len(lst) - 1)
+        return lst
+    
+    @staticmethod
+    def order_stats(lst, k):
+        """
+        Finds the kth largest element
+        """
+        def partition(lh, rh, pivot):
+            while lh <= rh:
+                while lst[lh] < pivot:
+                    lh += 1
+                while lst[rh] > pivot:
+                    rh -= 1
+                if lh <= rh:
+                    lst[lh], lst[rh] = lst[rh], lst[lh]
+                    lh += 1
+                    rh -=1
+            return lh
+
+        def helper(lh, rh):
+            if lh >= rh: # length to be sorted is 1
+                return lst[lh]
+            pivot = random.choice(lst[lh:rh + 1])
+            ind = partition(lh, rh, pivot) # find the index of our pivot element
+            # if it is in the second half:
+            if len(lst) - ind >= k:
+                return helper(ind, rh)
+            else:
+                return helper(lh, ind - 1)
+
+        return helper(0, len(lst) - 1)
+
+# s = Sorting_algs()
+# while True:
+#     arr = [int(x) for x in input('Array? ').split()]
+#     if len(arr) == 0: break
+#     k = int(input('k? '))
+#     print(s.order_stats(arr, k))
