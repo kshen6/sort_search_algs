@@ -179,6 +179,39 @@ class Sorting_algs():
             return merged + left[l:] + right[r:]
     
     @staticmethod
+    def merge_sort_3(lst, sort = None):
+        """
+        Recursively splits the job in half in order to divide
+        and conquer
+        """
+        sentinel = float('inf')
+
+        # base case: only 1 element
+        if len(lst) == 1:
+            return lst
+
+        # divide in half
+        i = len(lst) // 2
+        left = Sorting_algs.merge_sort(lst[:i])
+        right = Sorting_algs.merge_sort(lst[i:])
+
+        left.append(sentinel)
+        right.append(sentinel)
+
+        # merge
+        merged = [0] * len(lst)
+        l = r = 0
+        for j in range(len(lst)):
+            if left[l] <= right[r]:
+                merged[j] = left[l]
+                l += 1
+            else:
+                merged[j] = right[r]
+                r += 1
+        
+        return merged
+    
+    @staticmethod
     def quicksort(lst, sort = None):
         """
         Recursively partitions the list using a divide and conquer
@@ -241,9 +274,9 @@ class Sorting_algs():
 
         return helper(0, len(lst) - 1)
 
-# s = Sorting_algs()
-# while True:
-#     arr = [int(x) for x in input('Array? ').split()]
-#     if len(arr) == 0: break
-#     k = int(input('k? '))
-#     print(s.order_stats(arr, k))
+s = Sorting_algs()
+while True:
+    arr = list(input('Array? ').split())
+    if len(arr) == 0: break
+    k = int(input('k? '))
+    print(s.order_stats(arr, k))
